@@ -1,0 +1,13 @@
+{
+  "name": "Nextcloud On This Day",
+  "short_name": "NCOTD",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#000",
+  "description": "Nextcloud photos on this day",
+  "icons": [{
+    "src": "/favicon.ico",
+    "sizes": "32x32",
+    "type": "image/gif"
+  }]
+}

@@ -1,0 +1,157 @@
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #000;
+    color: #f0f2f3;
+    text-align: center;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  .title {
+    margin-bottom: .25em;
+  }
+  
+  .title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .subtitle {
+    margin-bottom: .25em;
+    position: relative;
+  }
+
+  .subtitle input {
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    margin-left: -7em;
+  }
+
+  .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-column-gap: .5em;
+    margin-top: .25em;
+  }
+
+  @media (max-width: 390px) {
+    .container {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .photo-date {
+    position: absolute;
+    bottom: .5em;
+    right: .5em;
+  }
+
+  .lazyload,
+  .lazyloading {
+    opacity: 0;
+  }
+  .lazyloaded {
+    opacity: 1;
+  }
+
+  .ratio-container {
+    position: relative;
+    margin-bottom: 0.5em;
+    overflow: hidden;
+  }
+  .ratio-container:after {
+      content: '';
+      display: block;
+      height: 0;
+      width: 100%;
+      padding-bottom: 100%;
+  }
+  .ratio-container > * {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+  }
+  .ratio-container img {
+    transition: transform .5s ease, opacity 300ms;
+  }
+  .ratio-container img:hover {
+    transform: scale(1.025);
+  }
+
+  .year {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #000;
+    padding: .25em 0;
+    margin-bottom: 0;
+  }
+
+  .prevnext {
+    display: inline-block;
+    color: inherit;
+    text-decoration: none;
+    margin: 0 .5em;
+    position: relative;
+  }
+
+  .prevnext::before {
+    /* increase tap area */
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 2em;
+    height: 2em;
+    top: -.5em;
+    left: -.5em;
+  }
+</style>
+
+<main>
+  <h3 class="title"><a href="<%= Helpers.date_url(today) %>">Op deze dag</a></h3>
+  <div class="subtitle">
+    <a class="prevnext" href="<%= Helpers.date_url(day.shift(days: -1)) %>">◁</a>
+    <label for="date"><%= "#{day.to_s("%-d")} #{Helpers.month_name(day)}" %></label>
+    <a class="prevnext" href="<%= Helpers.date_url(day.shift(days: 1)) %>" style="transform: scale(-1, 1);">◁</a>
+
+    <input id="date" type="date" />
+  </div>
+
+  <div class="main-container">
+    <%- photos.group_by(&.year).each do |year, photos| -%>
+      <section>
+        <p class="year"><%= year %></p>
+        <div class="container">
+          <%- photos.sort {|a,b| Helpers.sort_by_taken_at(a, b) }.each do |photo| -%>
+          <div class="ratio-container">
+            <a href="<%= Helpers.nextcloud_photo_uri(nextcloud_uri, photo.file_id.as(Int64), {2000, 2000}) %>" target="_blank">
+              <img
+                alt="<%= photo.exif_created_at %>"
+                data-sizes="auto"
+                data-src="<%= Helpers.nextcloud_photo_uri(nextcloud_uri, photo.file_id.as(Int64), {512, 512}) %>"
+                class="lazyload" />
+            </a>
+          </div>
+          <%- end -%>
+        </div>
+      </section>
+    <%- end -%>
+  </div>
+
+  <script>
+    document.getElementById("date").addEventListener("change", e => {
+      const pad = value => ('00' + value).slice(-2);
+      const date = e.target.valueAsDate;
+      const dateStr = `${pad(date.getDate())}-${pad(date.getMonth() +1)}`;
+
+      window.location.href = `/${dateStr}`;
+    });
+  </script>
+</main>

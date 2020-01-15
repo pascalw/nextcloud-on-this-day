@@ -1,0 +1,12 @@
+.DS_Store
+.env*
+*.dwarf
+
+/docs/
+/lib/
+/bin/
+/.shards/
+/__stubs__
+
+db/*.db
+scratch.cr

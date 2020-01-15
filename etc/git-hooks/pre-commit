@@ -1,0 +1,30 @@
+#!/bin/bash
+set -e
+PURPLE='\033[0;95m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+error() {
+  echo "$@"
+  exit 1
+}
+
+run() {
+  label="$1"
+  shift
+  echo "Running $label"
+
+  "$@" && echo "$label ran successfully." || error "$label failed, commit aborted."
+  echo
+}
+
+CHANGED_CR_FILES=$(git diff --cached --name-only --diff-filter=ACM "*.cr" | tr '\n' ' ')
+
+[ ! -z "$CHANGED_CR_FILES" ] && {
+  echo -e "${PURPLE}Pre-commit running...${NC}"
+
+  run "crystal tool format" crystal tool format $CHANGED_CR_FILES
+  echo "$CHANGED_CR_FILES" | xargs git add
+
+  echo -e "${GREEN}Pre-commit passed!${NC}"
+} || :

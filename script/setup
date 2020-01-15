@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+
+shards install
+
+echo 'Setting up git hooks...'
+for h in etc/git-hooks/*; do ln -sf ../../$h .git/hooks/$(basename $h); done

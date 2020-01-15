@@ -1,0 +1,27 @@
+name: ncotd
+version: 0.1.0
+
+authors:
+  - Pascal Widdershoven
+
+targets:
+  ncotd:
+    main: src/main.cr
+
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+  dotenv:
+    github: gdotdesign/cr-dotenv
+  pg:
+    github: will/crystal-pg
+    version: 0.19.0
+  crecto:    
+    github: Crecto/crecto
+  sqlite3:
+    github: crystal-lang/crystal-sqlite3
+    version: 0.14.0
+  micrate:
+    github: juanedi/micrate
+
+crystal: 0.32.1
