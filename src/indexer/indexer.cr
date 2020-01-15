@@ -26,8 +26,10 @@ module Indexer
       insert_photo(photo, file)
     end
 
-    state_db.exec("DELETE FROM state;")
-    state_db.exec("INSERT INTO state values(?);", nc_last_mtime)
+    state_db.transaction do |tx|
+      tx.connection.exec("DELETE FROM state;")
+      tx.connection.exec("INSERT INTO state values(?);", nc_last_mtime)
+    end
   end
 
   private def try_determine_photo_date(file, root_path)
