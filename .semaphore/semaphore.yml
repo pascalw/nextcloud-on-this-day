@@ -1,0 +1,17 @@
+version: v1.0
+name: Crystal
+agent:
+  machine:
+    type: e1-standard-2
+  containers:
+    - name: main
+      image: crystallang/crystal
+blocks:
+  - name: Specs
+    task:
+      jobs:
+        - name: crystal spec
+          commands:
+            - checkout
+            - shards install
+            - crystal spec
