@@ -2,7 +2,7 @@ require "kemal"
 require "uri"
 
 require "../repo"
-URL_DATE_FORMAT = "%d-%m"
+require "../lib/day"
 
 module Web::Helpers
   extend self
@@ -36,12 +36,12 @@ module Web::Helpers
     a.compare_taken_at(b)
   end
 
-  def month_name(time)
-    MONTH_NAMES[time.month]
+  def month_name(day)
+    MONTH_NAMES[day.month]
   end
 
-  def date_url(date : Time, absolute = false) : String
-    "#{absolute ? ENV["SELF"] : ""}/#{date.to_s(URL_DATE_FORMAT)}"
+  def date_url(day : Day, absolute = false) : String
+    "#{absolute ? ENV["SELF"] : ""}/#{day.to_s}"
   end
 end
 
@@ -63,35 +63,34 @@ module Web::Main
 
     get "/" do |env|
       today = Time.local EUROPE_AMSTERDAM
-      env.redirect Helpers.date_url(today)
+      day = Day.from_time(today)
+      env.redirect Helpers.date_url(day)
     end
 
     get "/:date" do |env|
       date_str = env.params.url["date"]
-      today = Time.local EUROPE_AMSTERDAM
+      day = Day.parse(date_str)
 
-      url_day = Time.parse(date_str, URL_DATE_FORMAT, EUROPE_AMSTERDAM)
-      day = Time.local(today.year, url_day.month, url_day.day)
-
-      photos = Repo.find_photos(day.to_s("%d%m"))
+      photos = Repo.find_photos(day)
       render "src/web/templates/photo_feed.ecr", "src/web/templates/layout.ecr"
     end
 
     get "/feed.xml" do |env|
       env.response.content_type = "text/xml"
-      day = Time.local EUROPE_AMSTERDAM
+      today = Time.local EUROPE_AMSTERDAM
+      day = Day.from_time(today)
 
       <<-XML
       <?xml version="1.0" encoding="utf-8"?>
       <feed xmlns="http://www.w3.org/2005/Atom">
         <title>Nextcloud Today</title>
         <link href="#{ENV["SELF"]}" rel="self"/>
-        <updated>#{day.at_beginning_of_day.to_rfc3339}</updated>
+        <updated>#{today.at_beginning_of_day.to_rfc3339}</updated>
         <id>#{ENV["SELF"]}</id>
         <entry>
-          <title>Op deze dag: #{day.to_s(URL_DATE_FORMAT)}</title>
+          <title>Op deze dag: #{day.to_s}</title>
           <link href="#{Helpers.date_url(day, absolute: true)}"/>
-          <updated>#{day.at_beginning_of_day.to_rfc3339}</updated>
+          <updated>#{today.at_beginning_of_day.to_rfc3339}</updated>
           <id>#{Helpers.date_url(day, absolute: true)}</id>
           <content type="html"></content>
         </entry>

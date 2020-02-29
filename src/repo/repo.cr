@@ -2,6 +2,7 @@ require "sqlite3"
 require "crecto"
 
 require "./photo"
+require "../lib/day"
 
 module Repo
   extend Crecto::Repo
@@ -12,8 +13,10 @@ module Repo
     conf.uri = ENV["DB_URL"]
   end
 
-  def self.find_photos(day)
-    query = Query.where(day: day).order_by("year DESC")
+  def self.find_photos(day : Day)
+    day_str = "#{day.day_str}#{day.month_str}"
+
+    query = Query.where(day: day_str).order_by("year DESC")
     self.all(Photo, query)
   end
 end
