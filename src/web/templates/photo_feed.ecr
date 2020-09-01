@@ -131,11 +131,11 @@
         <div class="container">
           <%- photos.sort {|a,b| Helpers.sort_by_taken_at(a, b) }.each do |photo| -%>
           <div class="ratio-container">
-            <a href="<%= Helpers.nextcloud_photo_uri(nextcloud_uri, photo.file_id.as(Int64), {2000, 2000}) %>" target="_blank">
+            <a href="<%= Helpers.nextcloud_photo_uri(nextcloud_uri, photo.file_id.as(Int64), {2000, 2000}, false) %>" target="_blank">
               <img
                 alt="<%= photo.exif_created_at %>"
                 data-sizes="auto"
-                data-src="<%= Helpers.nextcloud_photo_uri(nextcloud_uri, photo.file_id.as(Int64), {512, 512}) %>"
+                data-src="<%= Helpers.nextcloud_photo_uri(nextcloud_uri, photo.file_id.as(Int64), {512, 512}, true) %>"
                 class="lazyload" />
             </a>
           </div>

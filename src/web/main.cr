@@ -22,11 +22,16 @@ module Web::Helpers
     12 => "december",
   }
 
-  def nextcloud_photo_uri(nextcloud_uri : URI, file_id : Int64, size : {Int, Int})
+  def nextcloud_photo_uri(nextcloud_uri : URI, file_id : Int64, size : {Int, Int}, crop = false)
     uri = nextcloud_uri.dup
     uri.path = "/index.php/core/preview"
 
     query_params = HTTP::Params.new({"fileId" => [file_id.to_s], "x" => [size[0].to_s], "y" => [size[1].to_s]})
+
+    unless crop
+      query_params["a"] = "true"
+    end
+
     uri.query = query_params.to_s
 
     uri
