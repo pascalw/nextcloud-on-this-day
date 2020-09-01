@@ -1,6 +1,6 @@
-FROM alpine:latest as builder
+FROM crystallang/crystal:0.32.1-alpine as builder
 RUN apk add --update --no-cache --force-overwrite \
-               crystal shards openssl-libs-static openssl-dev g++ gc-dev \
+               openssl-libs-static openssl-dev g++ gc-dev \
                libc-dev libevent-dev libevent-static libxml2-dev llvm llvm-dev \
                llvm-static make pcre-dev readline-dev readline-static \
                yaml-dev zlib-dev zlib-static ca-certificates xz-dev \
